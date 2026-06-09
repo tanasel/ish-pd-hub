@@ -2,7 +2,7 @@
 
 A curated, searchable hub of **professional development opportunities** for staff at the
 **International School of The Hague (ISH)** — designed so school leaders can keep it stocked
-themselves by editing a single Google Sheet.
+themselves with a simple form: no spreadsheet, no code.
 
 Built for ISH leadership. Elegant editorial design on the real ISH brand
 (logo blue `#195386`, rose accent, *Fraunces* + *DM Sans*), light **and** dark mode,
@@ -14,30 +14,34 @@ fully responsive, accessible, and dependency-free.
 
 ## What it does
 
-- **57 starter opportunities** across **8 categories** — IB Official, School-Based & Coaching,
+- **80 opportunities** across **8 categories** — IB Official, School-Based & Coaching,
   Leadership, Conferences & Networks, Online Courses & Certifications, EdTech & AI,
-  Wellbeing & Inclusion, Subject & Pedagogy.
+  Wellbeing & Inclusion, Subject & Pedagogy. Each one checked to be online or within Europe.
 - **Search** by name / provider / topic, and **filter** by category, audience, format and cost.
 - A **spotlight** for in-house events (currently the whole-staff **INSET Day, 10 June 2026** — its
   ten sessions are included and link to the official overview).
-- **Leaders add resources by editing a Google Sheet** — add a row, refresh, done. No code.
-- Live **Google-Sheet** data source with an automatic **built-in fallback** so the page never breaks.
+- **Leaders add resources with a short in-app form** — access-code protected, so only selected
+  staff can add (everyone can browse). No spreadsheet, no code.
+- Past-dated events **auto-archive**; a dark-mode toggle; works on phones and laptops.
 
 ## How the data works
 
 ```
-Google Sheet (live, leaders edit it)  ──►  the Hub
-        │  (if unreachable / not yet set up)
-        └──────────────►  data/resources.json  (built-in fallback)
+data/resources.json  (80 baseline, version-controlled)  ──►  the Hub
+                                                              ▲
+ishweb.nl PHP backend (shared staff additions)  ────────────┘
+   GET = read additions · POST = add one (access code checked, server-side)
 ```
 
-- The site reads the sheet via Google’s public **gviz** endpoint and maps columns by their header
-  names. If that fails for any reason, it falls back to `data/resources.json` and says so.
-- All external data is treated as **untrusted**: text is rendered as plain text and links are
-  restricted to `http(s)`, so nothing in the sheet can break or hijack the page.
+- The 80 baseline always load first, so the page is never blank. Then any shared additions are
+  fetched from the backend and merged on top. If the backend is unreachable, you simply see the 80.
+- All data is treated as **untrusted**: text is rendered as plain text and links are restricted to
+  `http(s)`, so a malicious addition can't run scripts or hijack the page.
+- **Access control:** anyone can browse; only staff with the **access code** can add. The code is
+  enforced on the server (`backend/api.php`); the public site ships only its SHA-256 hash.
 
-To connect a live sheet, see **[`docs/SETUP-GOOGLE-SHEET.md`](docs/SETUP-GOOGLE-SHEET.md)**.
-For leaders maintaining the content, see **[`docs/HOW-TO-ADD.md`](docs/HOW-TO-ADD.md)**.
+Backend setup: **[`docs/SETUP-BACKEND.md`](docs/SETUP-BACKEND.md)**.
+For leaders maintaining the content: **[`docs/HOW-TO-ADD.md`](docs/HOW-TO-ADD.md)**.
 
 ## Run it locally
 
@@ -62,9 +66,10 @@ Everything tweakable lives in the `CONFIG` block at the top of `assets/app.js`:
 
 ```js
 const CONFIG = {
-  SHEET_ID:  "",                    // paste a Google Sheet ID to go live; "" = built-in list
-  SHEET_TAB: "Resources",           // "" or first-tab name
-  FALLBACK:  "data/resources.json", // the safety-net list
+  FALLBACK:         "data/resources.json",         // the 80 baseline items (always loaded)
+  API_URL:          "https://ishweb.nl/pd/api.php", // the school's backend for shared additions
+  REQUIRE_PASSCODE: true,                           // require the staff access code to add
+  PASSCODE_SHA256:  "…",                             // SHA-256 of the code (plaintext lives only on the server)
 };
 ```
 
@@ -75,14 +80,17 @@ ish-pd-hub/
 ├── index.html              # markup
 ├── assets/
 │   ├── styles.css          # design system (ISH brand, light/dark)
-│   ├── app.js              # data loading, search/filter, render, theme
-│   └── ish-logo.png        # official ISH logo (for reference / future use)
+│   ├── app.js              # data loading, search/filter, render, theme, access code
+│   └── ish-logo.png        # official ISH logo
 ├── data/
-│   ├── resources.json      # built-in fallback list (57 resources)
-│   └── resources.csv       # same list, ready to import into Google Sheets
+│   ├── resources.json      # the 80 baseline opportunities (version-controlled)
+│   └── resources.csv       # the same list as CSV (handy export)
+├── backend/
+│   ├── api.php             # the school's add/read endpoint (deployed to ishweb.nl)
+│   └── data.json           # starter store for shared additions ({"resources":[]})
 ├── docs/
 │   ├── HOW-TO-ADD.md       # 1-page guide for leaders (non-technical)
-│   └── SETUP-GOOGLE-SHEET.md
+│   └── SETUP-BACKEND.md    # one-time backend setup
 └── README.md
 ```
 
@@ -95,7 +103,7 @@ and colour is never the only signal (every category also carries a label).
 ## Notes
 
 - The INSET session facilitators’ names come from ISH’s own published overview PDF. If the Hub is
-  ever made fully public, those names can be removed by editing the sheet/JSON.
+  ever made fully public, those names can be removed by editing the data.
 - The brand colours, fonts and mission wording were verified from ISH’s live site and guiding statements.
 
 ---

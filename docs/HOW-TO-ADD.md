@@ -11,25 +11,24 @@ The easiest way to add an opportunity is the **“Add a resource” button** on 
 ## To add a new opportunity (the easy way)
 
 1. Click **“Add a resource”** on the Hub.
-2. Fill the short form. Only **Title** and **Category** are required — the rest just make the
+2. Enter the **staff access code** (only selected leaders have it — ask whoever set up the Hub).
+3. Fill the short form. Only **Title** and **Category** are required — the rest just make the
    card richer. Add a **Date** for one-off events (a conference, a deadline) and the card
    tidies itself away automatically once that date has passed.
-3. Click **Add resource**. It appears straight away and is saved for the whole team.
+4. Click **Add resource**. It appears straight away and is saved for the whole team.
 
 That's it — no spreadsheet needed.
 
 ## To edit or remove one
 
-Edits and removals happen in the back-end Google Sheet — the **“Advanced: open the sheet”**
-link on the Hub. Most of the time you'll never need it. Each row is one opportunity:
-- **Edit:** change the text in any cell.
-- **Remove:** delete the whole row (right-click the row number → *Delete row*).
+Added items are stored on the school's own server. To **edit or remove** one, ask whoever set
+up the Hub — it's a quick change to the data file on the server. Adding new ones never needs this.
 
 ---
 
-## What each column means
+## What each form field means
 
-| Column | What to write | Example |
+| Field | What to write | Example |
 |---|---|---|
 | **Title** | The name of the opportunity | `Google Certified Educator Level 1` |
 | **Category** | Pick **one** from the list below (spelling must match) | `EdTech & AI` |
@@ -66,10 +65,9 @@ Subject & Pedagogy
 
 ## Good to know
 
-- **Order doesn’t matter** — the Hub groups and sorts cards automatically; `Featured` items rise to the top.
-- **Leave a column blank** if it doesn’t apply (e.g. no URL for an in-house session). The card adapts.
+- **Order doesn’t matter** — the Hub groups and sorts cards automatically; featured items rise to the top.
+- **Leave a field blank** if it doesn’t apply (e.g. no link for an in-house session). The card adapts.
 - **In-house sessions** (no link) show “In-house — ask your line manager” instead of a website button.
-- **Don’t rename the header row** (the top row: *Title, Category, …*). The Hub matches on those names.
-- Several leaders can edit the sheet at once — just share it with them as **Editor**.
+- **Anyone can browse**; only staff with the access code can add — so share the code only with the leaders you choose.
 
-Questions? See `SETUP-GOOGLE-SHEET.md` for the one-time technical setup, or ask whoever set up the Hub.
+Questions? See `SETUP-BACKEND.md` for the one-time technical setup, or ask whoever set up the Hub.
