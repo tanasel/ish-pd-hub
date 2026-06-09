@@ -375,6 +375,57 @@ dialog#detail h3 { font-size: 28px; margin: 10px 0 4px; font-weight: 600; }
 dialog#detail .m-close { position:absolute; top: 14px; right: 16px; }
 dialog#detail .m-row { display:flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
 
+/* ---------- Tags: location + date ---------- */
+.tag--loc { background: var(--surface-2); }
+.tag--date { background: color-mix(in srgb, var(--c-conf) 16%, var(--surface)); color: color-mix(in srgb, var(--c-conf) 74%, var(--ink)); }
+.tag--date.tag--past { background: var(--bg-2); color: var(--muted); }
+
+/* ---------- Past-events toggle ---------- */
+.past-toggle {
+  font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  background: var(--surface); color: var(--muted);
+  border: 1px solid var(--hair-2); border-radius: 999px; padding: 5px 13px;
+  box-shadow: var(--sh-sm); transition: color .15s ease, border-color .15s ease, background .15s ease;
+}
+.past-toggle:hover { color: var(--ink); }
+.past-toggle[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: transparent; }
+
+/* ---------- Add-resource form ---------- */
+#addModal { max-width: min(620px, 94vw); }
+#addModal #addBar { background: linear-gradient(90deg, var(--primary-2), var(--primary)); }
+.add-form { padding-top: 26px; }
+.add-form h3 { font-size: 27px; margin: 8px 0 4px; }
+.add-form__hint { color: var(--muted); font-size: 14.5px; }
+.add-form__error { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); border-radius: var(--r-xs); padding: 9px 13px; font-size: 14px; font-weight: 600; margin: 12px 0 0; }
+html[data-theme="dark"] .add-form__error { color: #e89bb4; }
+.field { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.field label { font-size: 13px; font-weight: 700; color: var(--ink); }
+.field .req { color: var(--accent); }
+.field .opt { color: var(--muted); font-weight: 500; font-size: 12px; }
+.field input, .field select, .field textarea {
+  font: inherit; font-size: 15px; color: var(--ink);
+  background: var(--surface-2); border: 1px solid var(--hair-2); border-radius: var(--r-xs);
+  padding: 10px 12px; width: 100%; transition: border-color .15s ease, box-shadow .15s ease;
+}
+.field textarea { resize: vertical; min-height: 54px; }
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-color: var(--primary-2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-2) 22%, transparent);
+}
+.field input::placeholder, .field textarea::placeholder { color: var(--muted); }
+.add-form__actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 20px);
+  background: var(--ink); color: var(--bg);
+  border-radius: 999px; padding: 13px 22px; font-weight: 600; font-size: 15px;
+  box-shadow: var(--sh-lg); z-index: 60; opacity: 0; pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease; max-width: 90vw; text-align: center;
+}
+.toast.is-on { opacity: 1; transform: translate(-50%, 0); }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 860px) {
   .stats { grid-template-columns: repeat(2,1fr); }
@@ -387,4 +438,5 @@ dialog#detail .m-row { display:flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; 
   .hero__card, .add-card { padding: 26px 20px; }
   .brand__div, .brand__txt { display: none; }
   .grid { grid-template-columns: 1fr; }
+  .field-row { grid-template-columns: 1fr; }
 }

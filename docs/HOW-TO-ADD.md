@@ -1,24 +1,27 @@
 # Adding & editing resources — a 1-page guide for leaders
 
-The PD Hub reads its list straight from **one Google Sheet**. To add, change, or remove an
-opportunity, you just edit a row in that sheet — no code, no website editing. Changes appear
-on the Hub the next time someone refreshes the page.
+The easiest way to add an opportunity is the **“Add a resource” button** on the Hub itself
+(top-right, or in the blue panel near the bottom). You never have to open a spreadsheet.
 
-> You do **not** need to be technical to do this. If you can fill in a spreadsheet, you can
-> keep the Hub up to date.
+> You do **not** need to be technical. If you can fill in a short form, you can keep the Hub
+> up to date.
 
 ---
 
-## To add a new opportunity
+## To add a new opportunity (the easy way)
 
-1. Open the sheet (the **“Open the Google Sheet”** button on the Hub takes you there).
-2. Go to the **first empty row** at the bottom.
-3. Fill in the columns left to right. Only **Title** and **Category** are essential — the rest
-   make the card richer.
-4. That’s it. Refresh the Hub to see it.
+1. Click **“Add a resource”** on the Hub.
+2. Fill the short form. Only **Title** and **Category** are required — the rest just make the
+   card richer. Add a **Date** for one-off events (a conference, a deadline) and the card
+   tidies itself away automatically once that date has passed.
+3. Click **Add resource**. It appears straight away and is saved for the whole team.
+
+That's it — no spreadsheet needed.
 
 ## To edit or remove one
 
+Edits and removals happen in the back-end Google Sheet — the **“Advanced: open the sheet”**
+link on the Hub. Most of the time you'll never need it. Each row is one opportunity:
 - **Edit:** change the text in any cell.
 - **Remove:** delete the whole row (right-click the row number → *Delete row*).
 
@@ -37,6 +40,8 @@ on the Hub the next time someone refreshes the page.
 | **Description** | One sentence on what it is / why it’s useful | `Entry-level certification for Google tools.` |
 | **URL** | The official link (leave blank for in-house) | `https://edu.google.com/...` |
 | **Featured** | Type `Yes` to pin it near the top, otherwise leave blank | `Yes` |
+| **Location** | Where it happens, or "Online" | `Online` · `The Hague, NL` |
+| **Date** | One-off events only — the card auto-archives after this date | `2026-10-22` |
 
 ### The eight categories (copy these exactly)
 

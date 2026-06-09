@@ -13,7 +13,7 @@ maintain it from a **live Google Sheet**, do this once.
 **Option B — start blank:** create a sheet and make the first row exactly:
 
 ```
-Title | Category | Provider | Format | Audience | Cost | Description | URL | Featured
+Title | Category | Provider | Format | Audience | Cost | Description | URL | Featured | Location | Date
 ```
 
 ## 2. Make it readable by the website
@@ -47,6 +47,22 @@ link-viewable:
    ```
 3. Save and refresh. The status pill should switch from **“Showing the built-in list”** to
    **“Live from Google Sheet.”** The *Add a resource* button now opens your sheet directly.
+
+## 4. (Optional but recommended) Turn on the in-app "Add a resource" form
+
+So leaders can add resources **without ever opening the sheet**, deploy the small Apps Script in
+`scripts/Code.gs`:
+
+1. In the sheet: **Extensions ▸ Apps Script**. Paste the contents of `scripts/Code.gs`, then Save.
+2. **Deploy ▸ New deployment ▸ Web app** — *Execute as: Me*, *Who has access: Anyone* — Deploy, authorise, and copy the Web-app URL (it ends in `/exec`).
+3. Paste it into `assets/app.js`:
+   ```js
+   ADD_ENDPOINT: "https://script.google.com/macros/s/AKfy…/exec",
+   ```
+
+Now the Hub's **“Add a resource”** form writes straight to the sheet. Until you connect it, the
+form still works for whoever is using it (their additions are remembered in their own browser) —
+connecting the endpoint is simply what shares those additions with everyone.
 
 ## How it behaves (so nothing ever looks broken)
 

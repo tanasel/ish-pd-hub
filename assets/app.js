@@ -12,6 +12,10 @@ const CONFIG = {
   SHEET_ID: "",
   SHEET_TAB: "Resources",      // the tab (sheet) name that holds the data
   FALLBACK: "data/resources.json",
+  // Google Apps Script web-app /exec URL. Paste it here to let the in-app
+  // "Add a resource" form save straight to the Sheet (see scripts/Code.gs).
+  // Leave "" and the form still works locally for previewing.
+  ADD_ENDPOINT: "",
 };
 
 /* ---------- 2. Category metadata ---------- */
@@ -34,6 +38,7 @@ const state = {
   source: "fallback",
   lastReviewed: "",
   q: "",
+  showPast: false,
   filters: { category: new Set(), audience: new Set(), format: new Set(), cost: new Set() },
 };
 
@@ -53,6 +58,8 @@ const SHEET_FIELDS = {
   description: ["description", "summary", "details"],
   url: ["url", "link", "website", "provider url"],
   featured: ["featured", "highlight", "spotlight"],
+  location: ["location", "where", "region", "venue", "place"],
+  date: ["date", "when", "deadline", "expires", "end date", "event date"],
 };
 
 let detailReturnFocus = null;
@@ -134,6 +141,46 @@ function storageSet(key, value) {
   catch { /* Theme still toggles if storage is unavailable. */ }
 }
 
+/* ---------- 4b. Dates + auto-archive + locally-added resources ---------- */
+function parseDate(s) {
+  s = norm(s);
+  if (!s) return "";
+  let m = s.match(/^Date\((\d+),(\d+),(\d+)/); // gviz date, month is 0-indexed
+  if (m) return `${m[1]}-${String(+m[2] + 1).padStart(2, "0")}-${String(+m[3]).padStart(2, "0")}`;
+  m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return `${m[1]}-${String(+m[2]).padStart(2, "0")}-${String(+m[3]).padStart(2, "0")}`;
+  m = s.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{4})/); // DD/MM/YYYY
+  if (m) return `${m[3]}-${String(+m[2]).padStart(2, "0")}-${String(+m[1]).padStart(2, "0")}`;
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
+}
+function isPast(r) {
+  if (!r.date) return false;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const d = new Date(`${r.date}T00:00:00`);
+  return !isNaN(d.getTime()) && d < today;
+}
+function prettyDate(iso) {
+  const d = new Date(`${iso}T00:00:00`);
+  return isNaN(d.getTime()) ? "" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+const LS_ADDED = "ish-pd-added";
+function loadLocalAdded() {
+  try { const a = JSON.parse(localStorage.getItem(LS_ADDED) || "[]"); return Array.isArray(a) ? a : []; }
+  catch { return []; }
+}
+function saveLocalAdded(rec) {
+  try { const a = loadLocalAdded(); a.push(rec); localStorage.setItem(LS_ADDED, JSON.stringify(a)); }
+  catch { /* ignore */ }
+}
+function mergeLocalAdded() {
+  const seen = new Set(state.all.map((r) => `${r.title}|${r.provider}`.toLowerCase()));
+  loadLocalAdded().map(mapRecord).forEach((r) => {
+    const k = `${r.title}|${r.provider}`.toLowerCase();
+    if (r.title && !seen.has(k)) { state.all.push(r); seen.add(k); }
+  });
+}
+
 /* ---------- 5. Load data: Google Sheet first, JSON fallback ---------- */
 async function loadData() {
   if (CONFIG.SHEET_ID) {
@@ -207,6 +254,8 @@ function mapRecord(r) {
     description: g("description"),
     url:         safeUrl(g("url")),
     featured:    truthy(g("featured")),
+    location:    g("location"),
+    date:        parseDate(g("date")),
   };
 }
 
@@ -272,7 +321,8 @@ function matches(r) {
 function render() {
   const grid = $("#grid");
   grid.replaceChildren();
-  let list = state.all.filter(matches);
+  // Auto-archive: hide dated opportunities whose date has passed (unless "show past" is on).
+  let list = state.all.filter((r) => (state.showPast || !isPast(r)) && matches(r));
 
   // featured first, then alphabetical
   list.sort((a, b) => (b.featured - a.featured) || a.title.localeCompare(b.title));
@@ -281,9 +331,19 @@ function render() {
   const anyFilter = state.q || Object.values(state.filters).some((s) => s.size);
   $("#clearBtn").hidden = !anyFilter;
   $("#empty").hidden = list.length > 0;
+  updatePastToggle();
   announceResults(list.length, anyFilter);
 
   list.forEach((r) => grid.appendChild(card(r)));
+}
+
+function updatePastToggle() {
+  const btn = $("#pastToggle");
+  if (!btn) return;
+  const pastCount = state.all.filter(isPast).length;
+  btn.hidden = pastCount === 0;
+  btn.setAttribute("aria-pressed", String(state.showPast));
+  btn.textContent = state.showPast ? "Hide past events" : `Show past events (${pastCount})`;
 }
 
 function announceResults(count, anyFilter) {
@@ -325,7 +385,9 @@ function card(r) {
   const meta = el("div", "card__meta");
   if (r.cost)     meta.appendChild(el("span", `tag ${/free/i.test(r.cost) ? "tag--free" : "tag--cost"}`, r.cost));
   if (r.format)   meta.appendChild(el("span", "tag tag--format", r.format));
+  if (r.location) meta.appendChild(el("span", "tag tag--loc", r.location));
   if (r.audience) meta.appendChild(el("span", "tag tag--audience", r.audience));
+  if (r.date)     meta.appendChild(el("span", `tag tag--date${isPast(r) ? " tag--past" : ""}`, (isPast(r) ? "Past · " : "") + prettyDate(r.date)));
   body.appendChild(meta);
   c.appendChild(body);
 
@@ -536,6 +598,27 @@ async function init() {
   $("#detail").addEventListener("close", restoreDetailFocus);
   $("#detail").addEventListener("keydown", trapDetailFocus);
 
+  // Add-a-resource form + past-events toggle
+  const addBtnTop = $("#addBtnTop");
+  if (addBtnTop) addBtnTop.addEventListener("click", (e) => { e.preventDefault(); openAddForm(addBtnTop); });
+  const openAddBtn = $("#openAddBtn");
+  if (openAddBtn) openAddBtn.addEventListener("click", () => openAddForm(openAddBtn));
+  const addForm = $("#addForm");
+  if (addForm) addForm.addEventListener("submit", submitAddForm);
+  const addCancel = $("#addCancel");
+  if (addCancel) addCancel.addEventListener("click", closeAddForm);
+  const addClose = $("#addClose");
+  if (addClose) addClose.addEventListener("click", closeAddForm);
+  const addModal = $("#addModal");
+  if (addModal) {
+    addModal.addEventListener("click", (e) => { if (e.target.id === "addModal") closeAddForm(); });
+    addModal.addEventListener("cancel", (e) => { e.preventDefault(); closeAddForm(); });
+    addModal.addEventListener("close", restoreAddFocus);
+    addModal.addEventListener("keydown", (e) => trapFocusIn(addModal, e));
+  }
+  const pastToggle = $("#pastToggle");
+  if (pastToggle) pastToggle.addEventListener("click", () => { state.showPast = !state.showPast; render(); });
+
   try {
     await loadData();
   } catch (err) {
@@ -543,11 +626,89 @@ async function init() {
     $("#sourceTxt").textContent = "Could not load resources";
     return;
   }
+  mergeLocalAdded();
   buildChips();
   setStats();
   setSource();
   wireAddLinks();
   render();
+}
+
+/* ---------- 12. Add-a-resource form ---------- */
+let addReturnFocus = null;
+
+function trapFocusIn(d, e) {
+  if (e.key !== "Tab" || !(d.open || d.hasAttribute("open"))) return;
+  const focusable = visibleFocusable(d);
+  if (!focusable.length) { e.preventDefault(); d.focus({ preventScroll: true }); return; }
+  const first = focusable[0], last = focusable[focusable.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
+
+function openAddForm(trigger) {
+  const d = $("#addModal");
+  if (!d) return;
+  addReturnFocus = trigger || document.activeElement;
+  $("#addForm").reset();
+  $("#addError").hidden = true;
+  if (typeof d.showModal === "function" && !d.open) d.showModal();
+  else d.setAttribute("open", "");
+  requestAnimationFrame(() => { const t = $("#af-title"); if (t) t.focus({ preventScroll: true }); });
+}
+function closeAddForm() {
+  const d = $("#addModal");
+  if (typeof d.close === "function" && d.open) d.close();
+  else { d.removeAttribute("open"); restoreAddFocus(); }
+}
+function restoreAddFocus() {
+  const t = addReturnFocus; addReturnFocus = null;
+  if (t && typeof t.focus === "function" && document.contains(t)) t.focus({ preventScroll: true });
+}
+function showAddError(msg) {
+  const e = $("#addError");
+  if (e) { e.textContent = msg; e.hidden = false; }
+}
+function submitAddForm(e) {
+  e.preventDefault();
+  const v = (id) => norm((($("#" + id)) || {}).value);
+  const rec = {
+    title: v("af-title"), category: v("af-category"), provider: v("af-provider"),
+    format: v("af-format"), audience: v("af-audience"), cost: v("af-cost"),
+    location: v("af-location"), date: v("af-date"), description: v("af-description"),
+    url: v("af-url"), featured: "",
+  };
+  if (!rec.title || !rec.category) { showAddError("Please add at least a title and a category."); return; }
+  if (rec.url && !safeUrl(rec.url)) { showAddError("The link should start with http:// or https:// — or leave it blank."); return; }
+  saveLocalAdded(rec);          // remember in this browser (persists on refresh)
+  state.all.unshift(mapRecord(rec));  // show it straight away
+  postToEndpoint(rec);          // send to the Google Sheet back-end if connected
+  clearAll({ renderNow: false });
+  buildChips();
+  setStats();
+  render();
+  closeAddForm();
+  showToast(`Added “${rec.title}”. Thank you!`);
+  $("#main").scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+}
+function postToEndpoint(rec) {
+  if (!CONFIG.ADD_ENDPOINT) return;
+  try {
+    fetch(CONFIG.ADD_ENDPOINT, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(rec),
+    });
+  } catch (err) { console.warn("[ISH PD Hub] add endpoint failed", err); }
+}
+let toastTimer = null;
+function showToast(msg) {
+  const t = $("#toast");
+  if (!t) return;
+  t.textContent = msg; t.hidden = false;
+  requestAnimationFrame(() => t.classList.add("is-on"));
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.classList.remove("is-on"); setTimeout(() => { t.hidden = true; }, 250); }, 4000);
 }
 
 document.addEventListener("DOMContentLoaded", init);

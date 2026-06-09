@@ -117,6 +117,7 @@
           <h2>Opportunities</h2>
           <span class="count-pill" id="count">0</span>
           <button class="link-reset" id="clearBtn" hidden>Clear filters</button>
+          <button class="past-toggle" id="pastToggle" type="button" aria-pressed="false" hidden>Show past events</button>
         </div>
         <span class="source-pill" id="sourcePill" title="Where this list is loaded from">
           <span class="led"></span><span id="sourceTxt">Loading…</span>
@@ -138,29 +139,30 @@
       <div class="add-card">
         <span class="eyebrow">Built for school leaders</span>
         <h2>Add a resource in 30 seconds</h2>
-        <p>This hub reads straight from a shared Google Sheet, so leaders can keep it current without touching any code. Add a row, and it appears here automatically.</p>
+        <p>No spreadsheet, no code. Click the button, fill a short form, and your opportunity appears here for everyone. (A shared Google Sheet quietly keeps everything safe in the background.)</p>
         <div class="steps">
           <div class="step">
-            <b><span class="num">1</span> Open the sheet</b>
-            <p>Click “Open the Google Sheet”. Each row is one opportunity.</p>
+            <b><span class="num">1</span> Click “Add a resource”</b>
+            <p>The button below — or the one in the top bar — opens a simple form.</p>
           </div>
           <div class="step">
-            <b><span class="num">2</span> Add a row</b>
-            <p>Fill the columns: Title, Category, Provider, Format, Audience, Cost, Description, URL.</p>
+            <b><span class="num">2</span> Fill the short form</b>
+            <p>A title and a category are all that's required; the rest just makes the card richer.</p>
           </div>
           <div class="step">
-            <b><span class="num">3</span> Done</b>
-            <p>Refresh this page — your new resource is live for all staff.</p>
+            <b><span class="num">3</span> It appears instantly</b>
+            <p>Your opportunity shows up straight away and is saved for the whole team.</p>
           </div>
         </div>
         <div class="add-actions">
-          <a class="btn btn--primary" id="openSheetBtn" href="#" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M9 5h7a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8Z"/><path d="M9 5V3h7l2 2"/></svg>
-            Open the Google Sheet
-          </a>
+          <button class="btn btn--primary" id="openAddBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+            Add a resource
+          </button>
           <a class="btn" href="docs/HOW-TO-ADD.md">Read the 1-page guide</a>
+          <a class="btn btn--ghost" id="openSheetBtn" href="#" target="_blank" rel="noopener noreferrer">Advanced: open the sheet</a>
         </div>
-        <p class="add-note">Tip for leaders: keep the sheet's column headers exactly as named. Categories: IB Official · School-Based &amp; Coaching · Leadership · Conferences &amp; Networks · Online Courses &amp; Certifications · EdTech &amp; AI · Wellbeing &amp; Inclusion · Subject &amp; Pedagogy.</p>
+        <p class="add-note">Adding lots at once? “Advanced” opens the back-end Google Sheet — most of the time you'll never need it. Categories: IB Official · School-Based &amp; Coaching · Leadership · Conferences &amp; Networks · Online Courses &amp; Certifications · EdTech &amp; AI · Wellbeing &amp; Inclusion · Subject &amp; Pedagogy.</p>
       </div>
     </div>
   </section>
@@ -191,6 +193,97 @@
       <a class="btn btn--blue" id="dLink" href="#" target="_blank" rel="noopener noreferrer" style="margin-top:6px">Visit provider</a>
     </div>
   </dialog>
+
+  <!-- Add-a-resource form -->
+  <dialog id="addModal" aria-labelledby="addTitle" aria-modal="true">
+    <div class="m-bar" id="addBar"></div>
+    <button class="btn icon-btn m-close" id="addClose" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
+    </button>
+    <form class="m-body add-form" id="addForm" novalidate>
+      <span class="eyebrow">New opportunity</span>
+      <h3 id="addTitle">Add a development opportunity</h3>
+      <p class="add-form__hint">Only a title and a category are required — it appears straight away.</p>
+      <p class="add-form__error" id="addError" role="alert" hidden></p>
+
+      <div class="field">
+        <label for="af-title">Title <span class="req">*</span></label>
+        <input id="af-title" name="title" type="text" required placeholder="e.g. Goethe-Institut German teacher training" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="af-category">Category <span class="req">*</span></label>
+          <select id="af-category" name="category" required>
+            <option value="" disabled selected>Choose one…</option>
+            <option>IB Official</option>
+            <option>School-Based &amp; Coaching</option>
+            <option>Leadership</option>
+            <option>Conferences &amp; Networks</option>
+            <option>Online Courses &amp; Certifications</option>
+            <option>EdTech &amp; AI</option>
+            <option>Wellbeing &amp; Inclusion</option>
+            <option>Subject &amp; Pedagogy</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="af-format">Format</label>
+          <select id="af-format" name="format">
+            <option value="">—</option>
+            <option>In-school</option>
+            <option>Face-to-face</option>
+            <option>Online (live)</option>
+            <option>Online (self-paced)</option>
+            <option>Blended</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="af-provider">Provider</label>
+          <input id="af-provider" name="provider" type="text" placeholder="Who runs it" />
+        </div>
+        <div class="field">
+          <label for="af-location">Location</label>
+          <input id="af-location" name="location" type="text" placeholder="e.g. Online, or The Hague" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="af-audience">Audience</label>
+          <input id="af-audience" name="audience" type="text" placeholder="e.g. All staff" />
+        </div>
+        <div class="field">
+          <label for="af-cost">Cost</label>
+          <select id="af-cost" name="cost">
+            <option value="">—</option>
+            <option>Free</option>
+            <option>Paid</option>
+            <option>Subscription</option>
+            <option>Varies</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="af-date">Date <span class="opt">(optional — one-off events tidy themselves away after this date)</span></label>
+        <input id="af-date" name="date" type="date" />
+      </div>
+      <div class="field">
+        <label for="af-description">Description</label>
+        <textarea id="af-description" name="description" rows="2" placeholder="One sentence on what it is and why it's useful"></textarea>
+      </div>
+      <div class="field">
+        <label for="af-url">Link</label>
+        <input id="af-url" name="url" type="url" placeholder="https://…" />
+      </div>
+      <div class="add-form__actions">
+        <button type="button" class="btn" id="addCancel">Cancel</button>
+        <button type="submit" class="btn btn--primary">Add resource</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <script src="assets/app.js"></script>
 </body>
