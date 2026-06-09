@@ -113,7 +113,7 @@ function storageSet(key, value) {
 function parseDate(s) {
   s = norm(s);
   if (!s) return "";
-  let m = s.match(/^Date\((\d+),(\d+),(\d+)/); // gviz date, month is 0-indexed
+  let m = s.match(/^Date\((\d+),(\d+),(\d+)/); // "Date(y,m,d)" form, month 0-indexed
   if (m) return `${m[1]}-${String(+m[2] + 1).padStart(2, "0")}-${String(+m[3]).padStart(2, "0")}`;
   m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (m) return `${m[1]}-${String(+m[2]).padStart(2, "0")}-${String(+m[3]).padStart(2, "0")}`;
@@ -637,7 +637,7 @@ async function submitAddForm(e) {
   if (CONFIG.REQUIRE_PASSCODE) { try { sessionStorage.setItem("ish-pd-code", code); } catch { /* ignore */ } }
   saveLocalAdded(rec);          // remember in this browser (persists on refresh)
   state.all.unshift(mapRecord(rec));  // show it straight away
-  postToEndpoint(rec, code);    // send to the Google Sheet back-end (with the staff token) if connected
+  postToEndpoint(rec, code);    // send to the school's backend (with the staff token) if connected
   clearAll({ renderNow: false });
   buildChips();
   setStats();
