@@ -15,7 +15,7 @@ const CONFIG = {
   // ishweb.nl backend (PHP) for the SHARED additions. When set, the site reads
   // staff-added resources from here (GET) and posts new ones here (POST).
   // See backend/api.php. The 80 baseline items always come from FALLBACK below.
-  API_URL: "",
+  API_URL: "https://ishweb.nl/pd/api.php",
   // (Alternative backend) Google Apps Script web-app /exec URL.
   // Leave both "" and the form still works locally for previewing.
   ADD_ENDPOINT: "",
