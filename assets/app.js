@@ -16,6 +16,11 @@ const CONFIG = {
   // "Add a resource" form save straight to the Sheet (see scripts/Code.gs).
   // Leave "" and the form still works locally for previewing.
   ADD_ENDPOINT: "",
+  // Access control: anyone can BROWSE, but only staff with this code can ADD.
+  // The code is checked on the device AND again server-side in scripts/Code.gs
+  // (set the same code there). Set REQUIRE_PASSCODE:false to let anyone add.
+  REQUIRE_PASSCODE: true,
+  PASSCODE_SHA256: "ce2a11b57d142f4711894fab16fb26e4818b3a87e777728fec8a9908f38d8cdd", // = "ISHpd2026" — change this
 };
 
 /* ---------- 2. Category metadata ---------- */
@@ -179,6 +184,19 @@ function mergeLocalAdded() {
     const k = `${r.title}|${r.provider}`.toLowerCase();
     if (r.title && !seen.has(k)) { state.all.push(r); seen.add(k); }
   });
+}
+
+/* ---------- 4c. Access code (only selected staff can add) ---------- */
+async function sha256Hex(text) {
+  try {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  } catch { return ""; }
+}
+async function codeIsValid(code) {
+  if (!CONFIG.REQUIRE_PASSCODE) return true;
+  if (!code) return false;
+  return (await sha256Hex(code)) === CONFIG.PASSCODE_SHA256;
 }
 
 /* ---------- 5. Load data: Google Sheet first, JSON fallback ---------- */
@@ -652,6 +670,11 @@ function openAddForm(trigger) {
   addReturnFocus = trigger || document.activeElement;
   $("#addForm").reset();
   $("#addError").hidden = true;
+  const codeRow = $("#af-code-row");
+  if (codeRow) codeRow.hidden = !CONFIG.REQUIRE_PASSCODE;
+  if (CONFIG.REQUIRE_PASSCODE) {
+    try { const saved = sessionStorage.getItem("ish-pd-code"); if (saved) $("#af-code").value = saved; } catch { /* ignore */ }
+  }
   if (typeof d.showModal === "function" && !d.open) d.showModal();
   else d.setAttribute("open", "");
   requestAnimationFrame(() => { const t = $("#af-title"); if (t) t.focus({ preventScroll: true }); });
@@ -669,9 +692,10 @@ function showAddError(msg) {
   const e = $("#addError");
   if (e) { e.textContent = msg; e.hidden = false; }
 }
-function submitAddForm(e) {
+async function submitAddForm(e) {
   e.preventDefault();
   const v = (id) => norm((($("#" + id)) || {}).value);
+  const code = v("af-code");
   const rec = {
     title: v("af-title"), category: v("af-category"), provider: v("af-provider"),
     format: v("af-format"), audience: v("af-audience"), cost: v("af-cost"),
@@ -680,9 +704,11 @@ function submitAddForm(e) {
   };
   if (!rec.title || !rec.category) { showAddError("Please add at least a title and a category."); return; }
   if (rec.url && !safeUrl(rec.url)) { showAddError("The link should start with http:// or https:// — or leave it blank."); return; }
+  if (!(await codeIsValid(code))) { showAddError("That access code isn't right — only selected staff can add resources."); return; }
+  if (CONFIG.REQUIRE_PASSCODE) { try { sessionStorage.setItem("ish-pd-code", code); } catch { /* ignore */ } }
   saveLocalAdded(rec);          // remember in this browser (persists on refresh)
   state.all.unshift(mapRecord(rec));  // show it straight away
-  postToEndpoint(rec);          // send to the Google Sheet back-end if connected
+  postToEndpoint(rec, code);    // send to the Google Sheet back-end (with the staff token) if connected
   clearAll({ renderNow: false });
   buildChips();
   setStats();
@@ -691,13 +717,13 @@ function submitAddForm(e) {
   showToast(`Added “${rec.title}”. Thank you!`);
   $("#main").scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
 }
-function postToEndpoint(rec) {
+function postToEndpoint(rec, code) {
   if (!CONFIG.ADD_ENDPOINT) return;
   try {
     fetch(CONFIG.ADD_ENDPOINT, {
       method: "POST", mode: "no-cors",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(rec),
+      body: JSON.stringify({ ...rec, token: code || "" }),
     });
   } catch (err) { console.warn("[ISH PD Hub] add endpoint failed", err); }
 }

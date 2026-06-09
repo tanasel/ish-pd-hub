@@ -13,7 +13,10 @@
  *       - Execute as: Me
  *       - Who has access: Anyone
  *     Deploy, authorise, and COPY the Web app URL (ends in /exec).
- *  5. Paste that URL into CONFIG.ADD_ENDPOINT in assets/app.js. Done.
+ *  5. Paste that URL into CONFIG.ADD_ENDPOINT in assets/app.js.
+ *  6. Set ACCESS_CODE (below) to your chosen staff code, and put the SAME code's
+ *     SHA-256 hash in CONFIG.PASSCODE_SHA256 in assets/app.js. Only staff who
+ *     know the code can add; everyone else can still browse. Done.
  *
  * The sheet's header row must be (columns A–K):
  *   Title | Category | Provider | Format | Audience | Cost | Description | URL | Featured | Location | Date
@@ -28,6 +31,12 @@ function doPost(e) {
     var d = JSON.parse(e.postData.contents);
     var clean = function (s) { return (s == null ? '' : String(s)).slice(0, 600); };
 
+    // Access control: only requests carrying the staff code may add a resource.
+    // Set ACCESS_CODE to the same code used in assets/app.js. Empty string = open to all.
+    var ACCESS_CODE = 'ISHpd2026';
+    if (ACCESS_CODE && String(d.token || '') !== ACCESS_CODE) {
+      return json_({ ok: false, error: 'Not authorised to add a resource.' });
+    }
     if (!clean(d.title) || !clean(d.category)) {
       return json_({ ok: false, error: 'Title and category are required.' });
     }
