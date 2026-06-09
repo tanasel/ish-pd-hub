@@ -17,7 +17,7 @@ header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json; charset=utf-8');
 
 $FILE = __DIR__ . '/data.json';
-$ACCESS_CODE = 'ISHpd2026'; // MUST match the code in assets/app.js. '' = open to all.
+$ACCESS_CODE = '__SET_ON_SERVER__'; // Set the REAL code here on the server only (NOT in the public repo). Its SHA-256 goes in assets/app.js CONFIG.PASSCODE_SHA256. '' = open to all.
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -69,15 +69,26 @@ if ($method === 'POST') {
         if (!is_array($data) || !isset($data['resources']) || !is_array($data['resources'])) {
             $data = array('resources' => array());
         }
+        if (count($data['resources']) >= 2000) { // runaway / spam guard
+            flock($fp, LOCK_UN); fclose($fp);
+            http_response_code(429);
+            echo json_encode(array('ok' => false, 'error' => 'Too many additions; please contact the administrator.'));
+            exit;
+        }
         $data['resources'][] = $rec;
         ftruncate($fp, 0);
         rewind($fp);
         fwrite($fp, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         fflush($fp);
         flock($fp, LOCK_UN);
+        fclose($fp);
+        echo json_encode(array('ok' => true));
+        exit;
     }
+    // Could not get the lock — report an error instead of a false success.
     fclose($fp);
-    echo json_encode(array('ok' => true));
+    http_response_code(500);
+    echo json_encode(array('ok' => false, 'error' => 'Could not lock storage; please retry.'));
     exit;
 }
 

@@ -1,29 +1,23 @@
 /* =================================================================
    ISH Professional Development Hub
-   Data source: a shared Google Sheet (live) with a bundled JSON fallback.
+   Data: 80 baseline opportunities from data/resources.json, plus shared
+   staff-added items from the school's PHP backend (backend/api.php on ishweb.nl).
    No build step, no dependencies — works on GitHub Pages or any static host.
    ================================================================= */
 
 /* ---------- 1. CONFIG — the only thing leaders/IT need to change ---------- */
 const CONFIG = {
-  // Paste the Google Sheet ID here to go live. Leave "" to use the built-in list.
-  // The ID is the long string in the sheet URL:
-  //   https://docs.google.com/spreadsheets/d/<<THIS PART>>/edit
-  SHEET_ID: "",
-  SHEET_TAB: "Resources",      // the tab (sheet) name that holds the data
+  // The built-in baseline list (always loaded first → the site is never blank).
   FALLBACK: "data/resources.json",
-  // ishweb.nl backend (PHP) for the SHARED additions. When set, the site reads
-  // staff-added resources from here (GET) and posts new ones here (POST).
-  // See backend/api.php. The 80 baseline items always come from FALLBACK below.
+  // The school's own backend (PHP on ishweb.nl) for SHARED, staff-added resources.
+  // The site reads additions from here (GET) and posts new ones here (POST).
+  // See backend/api.php. Leave "" and the form still works locally for previewing.
   API_URL: "https://ishweb.nl/pd/api.php",
-  // (Alternative backend) Google Apps Script web-app /exec URL.
-  // Leave both "" and the form still works locally for previewing.
-  ADD_ENDPOINT: "",
   // Access control: anyone can BROWSE, but only staff with this code can ADD.
-  // The code is checked on the device AND again server-side in scripts/Code.gs
-  // (set the same code there). Set REQUIRE_PASSCODE:false to let anyone add.
+  // Checked on the device (hash below) AND again server-side in backend/api.php.
+  // Set REQUIRE_PASSCODE:false to let anyone add.
   REQUIRE_PASSCODE: true,
-  PASSCODE_SHA256: "ce2a11b57d142f4711894fab16fb26e4818b3a87e777728fec8a9908f38d8cdd", // = "ISHpd2026" — change this
+  PASSCODE_SHA256: "2dbf4875eeb5fd49ae1b40dff6b6c0d33f0d48b01fdff8835f6bc5f7a12d3675", // hash of the staff access code (the plaintext lives only on the server)
 };
 
 /* ---------- 2. Category metadata ---------- */
@@ -56,19 +50,6 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const norm = (s) => (s == null ? "" : String(s)).trim();
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-const SHEET_FIELDS = {
-  title: ["title", "name", "resource", "opportunity"],
-  category: ["category"],
-  provider: ["provider", "organisation", "organization"],
-  format: ["format", "delivery", "mode"],
-  audience: ["audience", "intended audience", "staff audience"],
-  cost: ["cost", "fee", "price"],
-  description: ["description", "summary", "details"],
-  url: ["url", "link", "website", "provider url"],
-  featured: ["featured", "highlight", "spotlight"],
-  location: ["location", "where", "region", "venue", "place"],
-  date: ["date", "when", "deadline", "expires", "end date", "event date"],
-};
 
 let detailReturnFocus = null;
 let searchInputHandler = null;
@@ -111,27 +92,6 @@ function externalIcon() {
     "stroke-linejoin": "round",
   }));
   return svg;
-}
-function canonicalHeader(h) {
-  const key = norm(h)
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}\s_-]/gu, "")
-    .replace(/[\s_-]+/g, " ")
-    .trim();
-  for (const [field, aliases] of Object.entries(SHEET_FIELDS)) {
-    if (aliases.includes(key)) return field;
-  }
-  return "";
-}
-function cellText(cell) {
-  if (!cell) return "";
-  return norm(cell.v == null ? cell.f : cell.v);
-}
-function rowHeaders(row) {
-  return ((row && row.c) || []).map((cell) => canonicalHeader(cellText(cell)));
-}
-function isHeaderRow(headers) {
-  return headers.includes("title") && headers.filter(Boolean).length >= 2;
 }
 function prefersReducedMotion() {
   try {
@@ -202,7 +162,7 @@ async function codeIsValid(code) {
   return (await sha256Hex(code)) === CONFIG.PASSCODE_SHA256;
 }
 
-/* ---------- 5. Load data: Google Sheet first, JSON fallback ---------- */
+/* ---------- 5. Load data: bundled baseline + shared backend additions ---------- */
 async function loadData() {
   // Base list = the bundled, version-controlled file (always works → never blank).
   const res = await fetch(CONFIG.FALLBACK, { cache: "no-store" });
@@ -228,37 +188,6 @@ async function loadData() {
       console.warn("[ISH PD Hub] additions endpoint unreachable; showing built-in list.", err);
     }
   }
-}
-
-// gviz endpoint returns typed JSON wrapped in a JS callback — parse robustly.
-async function fetchSheet(id, tab) {
-  const url = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;
-  const res = await fetch(url, { cache: "no-store" });
-  const txt = await res.text();
-  const start = txt.indexOf("{");
-  const end = txt.lastIndexOf("}");
-  if (start < 0 || end <= start) throw new Error("Invalid Google Sheet response");
-  const json = JSON.parse(txt.slice(start, end + 1));
-  const table = json.table || {};
-  let headers = (Array.isArray(table.cols) ? table.cols : []).map((c) => canonicalHeader(c && c.label));
-  let dataRows = Array.isArray(table.rows) ? table.rows : [];
-  const firstRowHeaders = rowHeaders(dataRows[0]);
-
-  // If gviz did not infer useful labels, or included the header row as data, use row 1 as headers.
-  if (isHeaderRow(firstRowHeaders) && (!isHeaderRow(headers) || firstRowHeaders.filter(Boolean).length >= headers.filter(Boolean).length)) {
-    headers = firstRowHeaders;
-    dataRows = dataRows.slice(1);
-  }
-
-  return dataRows.map((row) => {
-    const cells = (row && row.c) || [];
-    const obj = {};
-    headers.forEach((h, i) => {
-      if (!h) return;
-      obj[h] = cellText(cells[i]);
-    });
-    return obj;
-  });
 }
 
 function mapRecord(r) {
@@ -517,9 +446,11 @@ function trapDetailFocus(e) {
 
 /* ---------- 9. Stats ---------- */
 function setStats() {
-  $("#statTotal").textContent  = state.all.length;
-  $("#statFree").textContent   = state.all.filter((r) => /free/i.test(r.cost)).length;
-  $("#statOnline").textContent = state.all.filter((r) => /online|blended/i.test(r.format)).length;
+  // Count only current (non-archived) opportunities, to match what the grid shows.
+  const live = state.all.filter((r) => !isPast(r));
+  $("#statTotal").textContent  = live.length;
+  $("#statFree").textContent   = live.filter((r) => /free/i.test(r.cost)).length;
+  $("#statOnline").textContent = live.filter((r) => /online|blended/i.test(r.format)).length;
   $("#stats").removeAttribute("aria-hidden");
 }
 
@@ -534,14 +465,6 @@ function setSource() {
   }
   if (state.lastReviewed) $("#footNote").textContent =
     `Curious, connected and compassionate — inspiring personal excellence. · Last reviewed ${state.lastReviewed}`;
-}
-
-function wireAddLinks() {
-  const editUrl = CONFIG.SHEET_ID
-    ? `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/edit`
-    : "docs/SETUP-GOOGLE-SHEET.md";
-  $("#openSheetBtn").href = editUrl;
-  if (!CONFIG.SHEET_ID) $("#openSheetBtn").removeAttribute("target");
 }
 
 /* ---------- 10. Theme ---------- */
@@ -655,7 +578,6 @@ async function init() {
   buildChips();
   setStats();
   setSource();
-  wireAddLinks();
   render();
 }
 
@@ -725,7 +647,7 @@ async function submitAddForm(e) {
   $("#main").scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
 }
 function postToEndpoint(rec, code) {
-  const url = CONFIG.API_URL || CONFIG.ADD_ENDPOINT;
+  const url = CONFIG.API_URL;
   if (!url) return;
   try {
     fetch(url, {
