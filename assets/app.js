@@ -12,9 +12,12 @@ const CONFIG = {
   SHEET_ID: "",
   SHEET_TAB: "Resources",      // the tab (sheet) name that holds the data
   FALLBACK: "data/resources.json",
-  // Google Apps Script web-app /exec URL. Paste it here to let the in-app
-  // "Add a resource" form save straight to the Sheet (see scripts/Code.gs).
-  // Leave "" and the form still works locally for previewing.
+  // ishweb.nl backend (PHP) for the SHARED additions. When set, the site reads
+  // staff-added resources from here (GET) and posts new ones here (POST).
+  // See backend/api.php. The 80 baseline items always come from FALLBACK below.
+  API_URL: "",
+  // (Alternative backend) Google Apps Script web-app /exec URL.
+  // Leave both "" and the form still works locally for previewing.
   ADD_ENDPOINT: "",
   // Access control: anyone can BROWSE, but only staff with this code can ADD.
   // The code is checked on the device AND again server-side in scripts/Code.gs
@@ -201,26 +204,30 @@ async function codeIsValid(code) {
 
 /* ---------- 5. Load data: Google Sheet first, JSON fallback ---------- */
 async function loadData() {
-  if (CONFIG.SHEET_ID) {
-    try {
-      const rows = await fetchSheet(CONFIG.SHEET_ID, CONFIG.SHEET_TAB);
-      const clean = rows.map(mapRecord).filter((r) => r.title);
-      if (clean.length) {
-        state.all = clean;
-        state.source = "sheet";
-        return;
-      }
-    } catch (err) {
-      console.warn("[ISH PD Hub] Google Sheet not reachable, using built-in list.", err);
-    }
-  }
-  // Fallback
+  // Base list = the bundled, version-controlled file (always works → never blank).
   const res = await fetch(CONFIG.FALLBACK, { cache: "no-store" });
   const data = await res.json();
   const resources = data && Array.isArray(data.resources) ? data.resources : [];
   state.all = resources.map(mapRecord).filter((r) => r.title);
   state.lastReviewed = norm(data && data.meta && data.meta.lastReviewed);
   state.source = "fallback";
+
+  // Shared, staff-added resources from the ishweb.nl backend, merged on top.
+  if (CONFIG.API_URL) {
+    try {
+      const r2 = await fetch(CONFIG.API_URL, { cache: "no-store" });
+      const j = await r2.json();
+      state.source = "api"; // backend reachable
+      const extra = (Array.isArray(j) ? j : (j && j.resources) || []).map(mapRecord).filter((r) => r.title);
+      const seen = new Set(state.all.map((r) => `${r.title}|${r.provider}`.toLowerCase()));
+      extra.forEach((r) => {
+        const k = `${r.title}|${r.provider}`.toLowerCase();
+        if (!seen.has(k)) { state.all.push(r); seen.add(k); }
+      });
+    } catch (err) {
+      console.warn("[ISH PD Hub] additions endpoint unreachable; showing built-in list.", err);
+    }
+  }
 }
 
 // gviz endpoint returns typed JSON wrapped in a JS callback — parse robustly.
@@ -518,9 +525,9 @@ function setStats() {
 
 function setSource() {
   const pill = $("#sourcePill"), txt = $("#sourceTxt");
-  if (state.source === "sheet") {
+  if (state.source === "api" || state.source === "sheet") {
     pill.classList.remove("is-fallback");
-    txt.textContent = "Live from Google Sheet";
+    txt.textContent = "Live — shared with all staff";
   } else {
     pill.classList.add("is-fallback");
     txt.textContent = "Showing the built-in list";
@@ -718,13 +725,14 @@ async function submitAddForm(e) {
   $("#main").scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
 }
 function postToEndpoint(rec, code) {
-  if (!CONFIG.ADD_ENDPOINT) return;
+  const url = CONFIG.API_URL || CONFIG.ADD_ENDPOINT;
+  if (!url) return;
   try {
-    fetch(CONFIG.ADD_ENDPOINT, {
-      method: "POST", mode: "no-cors",
+    fetch(url, {
+      method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ ...rec, token: code || "" }),
-    });
+    }).catch((err) => console.warn("[ISH PD Hub] add endpoint failed", err));
   } catch (err) { console.warn("[ISH PD Hub] add endpoint failed", err); }
 }
 let toastTimer = null;
