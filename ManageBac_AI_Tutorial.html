@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical, honest guide to the four ManageBac AI features available to ISH teachers.">
+  <meta name="color-scheme" content="light">
+  <title>ManageBac AI: all you need to know | ISH staff guide</title>
+  <style>
+    :root {
+      --ink: #111111;
+      --paper: #fffaf0;
+      --white: #ffffff;
+      --blue: #005287;
+      --crimson: #d30d44;
+      --lime: #b3d234;
+      --orange: #f26648;
+      --purple: #9b56a2;
+      --cyan: #8edaf0;
+      --yellow: #ffd84d;
+      --muted: #5a5852;
+      --border: 3px solid var(--ink);
+      --shadow: 7px 7px 0 var(--ink);
+      --shadow-small: 4px 4px 0 var(--ink);
+      --content: 1120px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 112px;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image:
+        radial-gradient(circle at 12px 12px, rgba(0, 82, 135, 0.14) 2px, transparent 2px);
+      background-size: 28px 28px;
+      font-family: Inter, Aptos, "Segoe UI", Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.62;
+    }
+
+    a {
+      color: var(--blue);
+      font-weight: 800;
+      text-underline-offset: 0.18em;
+      text-decoration-thickness: 2px;
+    }
+
+    a:hover {
+      color: var(--crimson);
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    summary:focus-visible {
+      outline: 4px solid var(--purple);
+      outline-offset: 4px;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 999;
+      transform: translateY(-180%);
+      padding: 10px 14px;
+      border: var(--border);
+      background: var(--yellow);
+      color: var(--ink);
+      box-shadow: var(--shadow-small);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: var(--border);
+      background: var(--white);
+    }
+
+    .topbar-inner {
+      width: min(100% - 32px, var(--content));
+      min-height: 70px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: var(--border);
+      background: var(--lime);
+      box-shadow: 3px 3px 0 var(--ink);
+      font-family: "Arial Black", Impact, sans-serif;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .brand-text {
+      min-width: 0;
+      font-family: "Arial Black", Impact, sans-serif;
+      font-size: clamp(15px, 2vw, 20px);
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .print-button,
+    .copy-button {
+      border: var(--border);
+      background: var(--yellow);
+      color: var(--ink);
+      box-shadow: var(--shadow-small);
+      cursor: pointer;
+      font-weight: 900;
+      line-height: 1.1;
+      text-transform: uppercase;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .print-button {
+      padding: 10px 14px;
+      white-space: nowrap;
+    }
+
+    .print-button:hover,
+    .copy-button:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .progress-track {
+      height: 7px;
+      background: var(--white);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--crimson);
+    }
+
+    main {
+      width: min(100% - 32px, var(--content));
+      margin: 0 auto;
+      padding: 42px 0 76px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.55fr);
+      gap: 30px;
+      padding: clamp(28px, 5vw, 58px);
+      border: 5px solid var(--ink);
+      background: var(--cyan);
+      box-shadow: 12px 12px 0 var(--ink);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border: var(--border);
+      background: var(--yellow);
+      transform: rotate(11deg);
+    }
+
+    .hero::before {
+      top: -32px;
+      right: 28%;
+      width: 86px;
+      height: 86px;
+    }
+
+    .hero::after {
+      right: -38px;
+      bottom: -42px;
+      width: 132px;
+      height: 132px;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+
+    .eyebrow,
+    .section-kicker,
+    .card-label,
+    .evidence-pill,
+    .tiny-label {
+      font-family: "Arial Black", Impact, sans-serif;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin: 0 0 20px;
+      padding: 7px 11px;
+      border: var(--border);
+      background: var(--white);
+      box-shadow: var(--shadow-small);
+      font-size: 14px;
+    }
+
+    h1, h2, h3, h4 {
+      margin-top: 0;
+      font-family: "Arial Black", Impact, sans-serif;
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+    }
+
+    h1 {
+      max-width: 810px;
+      margin-bottom: 22px;
+      font-size: clamp(48px, 8vw, 88px);
+      text-transform: uppercase;
+    }
+
+    h1 span {
+      display: inline;
+      padding: 0 0.08em;
+      background: var(--crimson);
+      color: var(--white);
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    .hero-lede {
+      max-width: 720px;
+      margin: 0;
+      font-size: clamp(20px, 2.4vw, 27px);
+      font-weight: 750;
+      line-height: 1.4;
+    }
+
+    .hero-stamp {
+      position: relative;
+      z-index: 1;
+      align-self: end;
+      padding: 22px;
+      border: 4px solid var(--ink);
+      background: var(--lime);
+      box-shadow: var(--shadow);
+      transform: rotate(2deg);
+    }
+
+    .hero-stamp strong {
+      display: block;
+      margin-bottom: 8px;
+      font-family: "Arial Black", Impact, sans-serif;
+      font-size: 23px;
+      line-height: 1.05;
+      text-transform: uppercase;
+    }
+
+    .hero-stamp p {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 750;
+      line-height: 1.4;
+    }
+
+    .quick-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 38px 0 50px;
+    }
+
+    .quick-nav a {
+      padding: 9px 13px;
+      border: var(--border);
+      background: var(--white);
+      box-shadow: var(--shadow-small);
+      color: var(--ink);
+      font-size: 15px;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .quick-nav a:hover {
+      background: var(--yellow);
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .section {
+      margin-top: 64px;
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .section-number {
+      display: grid;
+      place-items: center;
+      width: 64px;
+      height: 64px;
+      border: 4px solid var(--ink);
+      background: var(--yellow);
+      box-shadow: var(--shadow-small);
+      font-family: "Arial Black", Impact, sans-serif;
+      font-size: 29px;
+      line-height: 1;
+    }
+
+    .section-kicker {
+      margin: 0 0 4px;
+      color: var(--blue);
+      font-size: 13px;
+    }
+
+    h2 {
+      margin-bottom: 0;
+      font-size: clamp(34px, 5vw, 57px);
+      text-transform: uppercase;
+    }
+
+    h3 {
+      margin-bottom: 12px;
+      font-size: clamp(23px, 3vw, 31px);
+    }
+
+    h4 {
+      margin-bottom: 10px;
+      font-size: 19px;
+      text-transform: uppercase;
+    }
+
+    p {
+      margin: 0 0 16px;
+    }
+
+    .truth-grid,
+    .feature-grid,
+    .two-col,
+    .privacy-grid,
+    .source-grid {
+      display: grid;
+      gap: 22px;
+    }
+
+    .truth-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .truth-card,
+    .feature-card,
+    .content-card,
+    .privacy-card,
+    .source-card,
+    .faq-item {
+      border: var(--border);
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .truth-card {
+      min-height: 100%;
+      padding: 24px;
+    }
+
+    .truth-card:nth-child(1) { background: var(--lime); }
+    .truth-card:nth-child(2) { background: var(--yellow); }
+    .truth-card:nth-child(3) { background: #ffc5d5; }
+
+    .truth-card .answer {
+      display: block;
+      margin-bottom: 12px;
+      font-family: "Arial Black", Impact, sans-serif;
+      font-size: 31px;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .truth-card p {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .start-here {
+      margin-top: 32px;
+      padding: clamp(24px, 4vw, 38px);
+      border: 5px solid var(--ink);
+      background: var(--crimson);
+      color: var(--white);
+      box-shadow: 10px 10px 0 var(--ink);
+    }
+
+    .start-here h3 {
+      font-size: clamp(29px, 4vw, 43px);
+      text-transform: uppercase;
+    }
+
+    .start-here p:last-child {
+      margin-bottom: 0;
+    }
+
+    .start-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(300px, 1.1fr);
+      gap: 30px;
+      align-items: center;
+    }
+
+    .mini-ui {
+      border: 4px solid var(--ink);
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: 7px 7px 0 #000000;
+    }
+
+    .mini-ui-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 16px;
+      border-bottom: var(--border);
+      background: var(--yellow);
+      font-weight: 900;
+    }
+
+    .mini-ui-body {
+      display: grid;
+      gap: 9px;
+      padding: 15px 16px 17px;
+    }
+
+    .mini-line {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .mini-line strong {
+      padding: 3px 6px;
+      border: 2px solid var(--ink);
+      background: var(--cyan);
+      text-transform: uppercase;
+    }
+
+    .mini-line span {
+      height: 12px;
+      background: #dedbd3;
+    }
+
+    .mini-caption {
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .feature-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .feature-card {
+      display: grid;
+      grid-template-columns: 62px 1fr;
+      gap: 18px;
+      padding: 24px;
+    }
+
+    .feature-icon {
+      display: grid;
+      place-items: center;
+      width: 62px;
+      height: 62px;
+      border: var(--border);
+      background: var(--cyan);
+      box-shadow: var(--shadow-small);
+      font-family: "Arial Black", Impact, sans-serif;
+      font-size: 23px;
+      line-height: 1;
+    }
+
+    .feature-card:nth-child(2) .feature-icon { background: var(--yellow); }
+    .feature-card:nth-child(3) .feature-icon { background: var(--lime); }
+    .feature-card:nth-child(4) .feature-icon { background: #d7b8df; }
+
+    .feature-card h3 {
+      margin-bottom: 8px;
+      font-size: 23px;
+    }
+
+    .feature-card p {
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .access-pill,
+    .evidence-pill {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      border: 2px solid var(--ink);
+      color: var(--ink);
+      font-size: 12px;
+    }
+
+    .access-pill {
+      padding: 4px 8px;
+      background: var(--white);
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .evidence-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 18px;
+    }
+
+    .evidence-pill {
+      padding: 5px 8px;
+      background: var(--white);
+    }
+
+    .evidence-pill.live { background: var(--lime); }
+    .evidence-pill.official { background: var(--cyan); }
+    .evidence-pill.robin { background: var(--yellow); }
+
+    .feature-section {
+      margin-top: 76px;
+      padding-top: 8px;
+      border-top: 6px solid var(--ink);
+    }
+
+    .feature-title-row {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 24px;
+      align-items: center;
+      margin-bottom: 26px;
+      padding-top: 26px;
+    }
+
+    .big-feature-number {
+      display: grid;
+      place-items: center;
+      width: 92px;
+      height: 92px;
+      border: 5px solid var(--ink);
+      background: var(--blue);
+      color: var(--white);
+      box-shadow: 8px 8px 0 var(--ink);
+      font-family: "Arial Black", Impact, sans-serif;
+      font-size: 44px;
+      line-height: 1;
+    }
+
+    #writing .big-feature-number { background: var(--crimson); }
+    #tagging .big-feature-number { background: var(--orange); color: var(--ink); }
+    #analytics .big-feature-number { background: var(--purple); }
+
+    .feature-title-row h2 {
+      font-size: clamp(34px, 5vw, 59px);
+    }
+
+    .feature-title-row .subtitle {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .two-col {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .content-card {
+      padding: 25px;
+    }
+
+    .content-card.accent-blue { background: #dceff8; }
+    .content-card.accent-lime { background: #eff9d0; }
+    .content-card.accent-yellow { background: #fff2b8; }
+    .content-card.accent-pink { background: #ffd6e1; }
+
+    .card-label {
+      display: inline-block;
+      margin-bottom: 13px;
+      padding: 5px 8px;
+      border: 2px solid var(--ink);
+      background: var(--white);
+      font-size: 12px;
+    }
+
+    .content-card ul,
+    .content-card ol {
+      margin: 0;
+      padding-left: 23px;
+    }
+
+    .content-card li {
+      margin-bottom: 9px;
+    }
+
+    .content-card li:last-child {
+      margin-bottom: 0;
+    }
+
+    .path {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 5px;
+    }
+
+    .path span {
+      padding: 6px 9px;
+      border: 2px solid var(--ink);
+      background: var(--white);
+      font-weight: 850;
+    }
+
+    .path b {
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .prompt-card {
+      margin-top: 24px;
+      border: 4px solid var(--ink);
+      background: var(--ink);
+      box-shadow: 8px 8px 0 var(--purple);
+      color: var(--white);
+    }
+
+    .prompt-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 17px;
+      border-bottom: 3px solid var(--white);
+    }
+
+    .prompt-head h3 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .copy-button {
+      flex: 0 0 auto;
+      padding: 8px 11px;
+      border-color: var(--white);
+      box-shadow: 3px 3px 0 var(--white);
+      font-size: 12px;
+    }
+
+    .copy-button:hover {
+      box-shadow: 1px 1px 0 var(--white);
+    }
+
+    .prompt-text {
+      margin: 0;
+      padding: 20px;
+      color: #f7f5ef;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 16px;
+      line-height: 1.58;
+      white-space: pre-wrap;
+    }
+
+    .honesty-note,
+    .privacy-note {
+      margin-top: 24px;
+      padding: 20px 22px;
+      border: 4px solid var(--ink);
+      background: var(--orange);
+      box-shadow: var(--shadow-small);
+      font-weight: 750;
+    }
+
+    .honesty-note strong,
+    .privacy-note strong {
+      font-family: "Arial Black", Impact, sans-serif;
+      text-transform: uppercase;
+    }
+
+    blockquote {
+      margin: 24px 0 0;
+      padding: 23px 25px;
+      border: 4px solid var(--ink);
+      background: var(--yellow);
+      box-shadow: var(--shadow);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    blockquote p:last-child {
+      margin-bottom: 0;
+    }
+
+    blockquote footer {
+      margin-top: 12px;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .privacy-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .privacy-card {
+      padding: 24px;
+    }
+
+    .privacy-card h3 {
+      font-size: 22px;
+    }
+
+    .privacy-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .do-not-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .do-not-list span {
+      padding: 10px 12px;
+      border: var(--border);
+      background: var(--white);
+      font-weight: 850;
+    }
+
+    .review-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .review-step {
+      padding: 17px 14px;
+      border: var(--border);
+      background: var(--white);
+      box-shadow: var(--shadow-small);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .review-step b {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--crimson);
+      font-family: "Arial Black", Impact, sans-serif;
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .faq-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .faq-item {
+      overflow: clip;
+    }
+
+    .faq-item summary {
+      position: relative;
+      padding: 19px 54px 19px 21px;
+      cursor: pointer;
+      font-family: "Arial Black", Impact, sans-serif;
+      font-size: 19px;
+      line-height: 1.25;
+      list-style: none;
+    }
+
+    .faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq-item summary::after {
+      content: "+";
+      position: absolute;
+      top: 50%;
+      right: 18px;
+      transform: translateY(-50%);
+      font-size: 31px;
+      line-height: 1;
+    }
+
+    .faq-item[open] summary {
+      border-bottom: var(--border);
+      background: var(--cyan);
+    }
+
+    .faq-item[open] summary::after {
+      content: "-";
+    }
+
+    .faq-answer {
+      padding: 21px;
+    }
+
+    .faq-answer p:last-child {
+      margin-bottom: 0;
+    }
+
+    .source-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .source-card {
+      padding: 21px;
+    }
+
+    .source-card h3 {
+      font-size: 20px;
+    }
+
+    .source-card p {
+      font-size: 15px;
+    }
+
+    .source-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .source-type {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 4px 8px;
+      border: 2px solid var(--ink);
+      background: var(--lime);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .source-card:nth-child(2) .source-type,
+    .source-card:nth-child(3) .source-type,
+    .source-card:nth-child(4) .source-type {
+      background: var(--cyan);
+    }
+
+    .source-card:nth-child(5) .source-type {
+      background: var(--yellow);
+    }
+
+    .footer-card {
+      margin-top: 64px;
+      padding: 28px;
+      border: 5px solid var(--ink);
+      background: var(--blue);
+      box-shadow: 10px 10px 0 var(--ink);
+      color: var(--white);
+    }
+
+    .footer-card h2 {
+      margin-bottom: 12px;
+      font-size: clamp(27px, 4vw, 42px);
+    }
+
+    .footer-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .status-message {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 200;
+      max-width: min(360px, calc(100vw - 36px));
+      padding: 12px 15px;
+      border: var(--border);
+      background: var(--lime);
+      box-shadow: var(--shadow-small);
+      font-weight: 900;
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .status-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 860px) {
+      .hero,
+      .start-grid,
+      .truth-grid,
+      .review-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-grid,
+      .two-col,
+      .privacy-grid,
+      .source-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stamp {
+        max-width: 420px;
+        transform: none;
+      }
+
+      .review-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      body {
+        font-size: 17px;
+      }
+
+      .topbar-inner {
+        width: min(100% - 20px, var(--content));
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+      }
+
+      .brand-text {
+        max-width: 155px;
+      }
+
+      .print-button {
+        padding: 8px 9px;
+        font-size: 13px;
+      }
+
+      main {
+        width: min(100% - 20px, var(--content));
+        padding-top: 24px;
+      }
+
+      .hero {
+        padding: 25px 20px 30px;
+        box-shadow: 7px 7px 0 var(--ink);
+      }
+
+      .hero::before {
+        display: none;
+      }
+
+      h1 {
+        font-size: clamp(39px, 11.6vw, 47px);
+      }
+
+      .quick-nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .quick-nav a {
+        display: grid;
+        place-items: center;
+        text-align: center;
+      }
+
+      .section-heading,
+      .feature-title-row {
+        grid-template-columns: 58px 1fr;
+        gap: 15px;
+      }
+
+      .section-number {
+        width: 58px;
+        height: 58px;
+      }
+
+      .big-feature-number {
+        width: 58px;
+        height: 58px;
+        border-width: 3px;
+        box-shadow: 4px 4px 0 var(--ink);
+        font-size: 28px;
+      }
+
+      .feature-title-row h2 {
+        font-size: 33px;
+      }
+
+      .feature-title-row .subtitle {
+        font-size: 15px;
+      }
+
+      .feature-card {
+        grid-template-columns: 1fr;
+      }
+
+      .do-not-list,
+      .review-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .prompt-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+
+    @media print {
+      :root {
+        --shadow: none;
+        --shadow-small: none;
+      }
+
+      body {
+        background: #ffffff;
+        font-size: 10.4pt;
+        line-height: 1.42;
+      }
+
+      .topbar,
+      .progress-track,
+      .quick-nav,
+      .copy-button,
+      .status-message {
+        display: none !important;
+      }
+
+      main {
+        width: 100%;
+        padding: 0;
+      }
+
+      .hero,
+      .start-here,
+      .truth-card,
+      .feature-card,
+      .content-card,
+      .prompt-card,
+      .privacy-card,
+      .source-card,
+      .faq-item,
+      .footer-card,
+      blockquote {
+        box-shadow: none !important;
+      }
+
+      .hero {
+        grid-template-columns: 1fr 0.42fr;
+        padding: 22px;
+        page-break-after: always;
+      }
+
+      h1 {
+        font-size: 38pt;
+      }
+
+      .section,
+      .feature-section {
+        margin-top: 28px;
+      }
+
+      .feature-section {
+        break-before: page;
+      }
+
+      .truth-card,
+      .feature-card,
+      .content-card,
+      .prompt-card,
+      .privacy-card,
+      .source-card,
+      .faq-item,
+      blockquote {
+        break-inside: avoid;
+      }
+
+      .truth-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .two-col,
+      .privacy-grid,
+      .source-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .faq-item:not([open]) .faq-answer {
+        display: block;
+      }
+
+      .faq-item summary::after {
+        display: none;
+      }
+
+      a {
+        color: var(--ink);
+        text-decoration: underline;
+      }
+
+      a[href^="http"]::after {
+        content: " (" attr(href) ")";
+        overflow-wrap: anywhere;
+        font-size: 8pt;
+        font-weight: 500;
+      }
+
+      .source-card a[href^="http"]::after {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to the guide</a>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" aria-label="ISH staff guide">
+        <span class="brand-mark" aria-hidden="true">ISH</span>
+        <span class="brand-text">ManageBac AI staff guide</span>
+      </div>
+      <div class="top-actions">
+        <button class="print-button" type="button" id="print-guide">Print / save PDF</button>
+      </div>
+    </div>
+    <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+  </header>
+
+  <main id="main-content">
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">For ISH secondary teaching staff</p>
+        <h1 id="page-title">ManageBac AI: <span>all you need to know</span></h1>
+        <p class="hero-lede">Four tools are now available in ManageBac. They can save a little time, but they do not know your lesson, task or professional judgement unless you provide the context.</p>
+      </div>
+      <aside class="hero-stamp" aria-label="Guide status">
+        <strong>Honest guide</strong>
+        <p>Plain instructions. Useful prompts. Clear limits. No student data in any example.</p>
+        <p><strong style="font-size:15px; margin-top:12px;">Last checked</strong> 30 August 2026</p>
+      </aside>
+    </section>
+
+    <nav class="quick-nav" aria-label="Guide sections">
+      <a href="#decision">Should I use it?</a>
+      <a href="#four-tools">The four tools</a>
+      <a href="#notifications">Notifications</a>
+      <a href="#writing">Ask AI</a>
+      <a href="#tagging">Tagging</a>
+      <a href="#analytics">Analytics</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <section class="section" id="decision" aria-labelledby="decision-title">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">?</span>
+        <div>
+          <p class="section-kicker">The short answer</p>
+          <h2 id="decision-title">Should I use this?</h2>
+        </div>
+      </div>
+
+      <div class="truth-grid">
+        <article class="truth-card">
+          <span class="answer">Yes</span>
+          <p>For a first draft, clearer wording, quick translation, tag suggestions or a summary of unread notifications.</p>
+        </article>
+        <article class="truth-card">
+          <span class="answer">Maybe</span>
+          <p>For spotting patterns in analytics. Ask a narrow question and check every claim against the actual chart or table.</p>
+        </article>
+        <article class="truth-card">
+          <span class="answer">No</span>
+          <p>For final feedback, grading or decisions about a student. The teacher remains responsible for the result.</p>
+        </article>
+      </div>
+
+      <div class="start-here">
+        <div class="start-grid">
+          <div>
+            <p class="section-kicker" style="color:#ffffff;">The one thing to remember</p>
+            <h3>The notification summary hides itself</h3>
+            <p>Click the bell and wait about 10 seconds. When the <strong>AI Summary</strong> bar appears, it may already be collapsed. Click the chevron on the right to open it.</p>
+            <p>It summarises <strong>unread notifications only</strong>. Use <strong>Mark All as Read</strong> regularly, or the summary may describe last term instead of this week.</p>
+          </div>
+          <div>
+            <div class="mini-ui" aria-label="Simplified illustration of a collapsed AI Summary bar">
+              <div class="mini-ui-header">
+                <span>✦ AI Summary</span>
+                <span aria-hidden="true">⌄</span>
+              </div>
+              <div class="mini-ui-body">
+                <div class="mini-line"><strong>Task</strong><span></span></div>
+                <div class="mini-line"><strong>Deadline</strong><span></span></div>
+                <div class="mini-line"><strong>Routine</strong><span></span></div>
+              </div>
+            </div>
+            <p class="mini-caption">Simplified visual, not a ManageBac screenshot. No student data is shown.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="four-tools" aria-labelledby="tools-title">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">4</span>
+        <div>
+          <p class="section-kicker">What is available</p>
+          <h2 id="tools-title">The four tools</h2>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">01</span>
+          <div>
+            <h3>Notifications Summary</h3>
+            <p>Sorts unread notifications into a short overview.</p>
+            <span class="access-pill">Available to everyone</span>
+          </div>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">02</span>
+          <div>
+            <h3>Writing Assistant: Ask AI</h3>
+            <p>Creates or revises text inside rich-text editors.</p>
+            <span class="access-pill">Teacher access can be toggled</span>
+          </div>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">03</span>
+          <div>
+            <h3>AI Curriculum Tagging</h3>
+            <p>Suggests curriculum tags for Portfolio and Class Stream entries.</p>
+            <span class="access-pill">Available to everyone</span>
+          </div>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">04</span>
+          <div>
+            <h3>AI Assistant</h3>
+            <p>Answers questions inside Academic Analytics.</p>
+            <span class="access-pill">Teacher access can be toggled</span>
+          </div>
+        </article>
+      </div>
+
+      <div class="honesty-note">
+        <strong>At ISH:</strong> Robin confirmed that these features are enabled without an extra cost or token limit for teachers. If you cannot see Ask AI or the Academic Analytics assistant, your individual permission may need checking.
+      </div>
+    </section>
+
+    <section class="feature-section" id="notifications" aria-labelledby="notifications-title">
+      <div class="feature-title-row">
+        <span class="big-feature-number" aria-hidden="true">1</span>
+        <div>
+          <h2 id="notifications-title">Notifications Summary</h2>
+          <p class="subtitle">The most immediately useful feature, once you know where it hides.</p>
+        </div>
+      </div>
+
+      <div class="evidence-row" aria-label="Evidence for this section">
+        <span class="evidence-pill live">Live checked at ISH</span>
+        <span class="evidence-pill live">Zero-student test surface</span>
+      </div>
+
+      <div class="two-col">
+        <article class="content-card accent-blue">
+          <span class="card-label">What it is</span>
+          <h3>A digest of unread activity</h3>
+          <p>It groups unread notifications into categories such as <strong>Task</strong>, <strong>Deadline</strong> and <strong>Routine</strong>. It can combine information across classes and flag items that are due soon.</p>
+        </article>
+        <article class="content-card accent-lime">
+          <span class="card-label">Where to find it</span>
+          <h3>Top bar → bell icon</h3>
+          <div class="path" aria-label="Navigation path">
+            <span>Bell</span><b aria-hidden="true">→</b><span>Wait about 10 sec</span><b aria-hidden="true">→</b><span>Open AI Summary</span>
+          </div>
+        </article>
+        <article class="content-card accent-yellow">
+          <span class="card-label">Good at</span>
+          <ul>
+            <li>Turning a busy notification list into a quick overview.</li>
+            <li>Grouping routine updates separately from deadlines.</li>
+            <li>Flagging patterns such as several overdue submissions.</li>
+            <li>Avoiding individual student names in the summary seen during the ISH check.</li>
+          </ul>
+        </article>
+        <article class="content-card accent-pink">
+          <span class="card-label">Cannot do</span>
+          <ul>
+            <li>Summarise notifications that are already marked as read.</li>
+            <li>Know that an old unread item is no longer important.</li>
+            <li>Replace opening the original notification when action is needed.</li>
+            <li>Stay visible after generating. You may need to reopen the collapsed bar.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head">
+          <h3>Best input: no prompt needed</h3>
+        </div>
+        <p class="prompt-text">1. Mark old notifications as read.
+2. Leave only current items unread.
+3. Open the bell and wait for AI Summary.
+4. Click the chevron, then open any source notification before acting.</p>
+      </div>
+    </section>
+
+    <section class="feature-section" id="writing" aria-labelledby="writing-title">
+      <div class="feature-title-row">
+        <span class="big-feature-number" aria-hidden="true">2</span>
+        <div>
+          <h2 id="writing-title">Writing Assistant: Ask AI</h2>
+          <p class="subtitle">A general writing box inside ManageBac, not a planner-aware co-teacher.</p>
+        </div>
+      </div>
+
+      <div class="evidence-row" aria-label="Evidence for this section">
+        <span class="evidence-pill official">Official ManageBac guidance</span>
+        <span class="evidence-pill robin">Robin tested at ISH</span>
+      </div>
+
+      <div class="two-col">
+        <article class="content-card accent-blue">
+          <span class="card-label">What it is</span>
+          <h3>Generate or improve text</h3>
+          <p>In a supported rich-text editor, click <strong>Ask AI</strong> to create new text. You can also highlight existing text first, then ask for a revision, simplification, correction or translation. Shortcut buttons include options such as <strong>Clarify and Improve Flow</strong> and <strong>Check Grammar and Spelling</strong>.</p>
+        </article>
+        <article class="content-card accent-lime">
+          <span class="card-label">Where to find it</span>
+          <h3>Any supported rich-text editor</h3>
+          <div class="path" aria-label="Navigation path">
+            <span>Open editor</span><b aria-hidden="true">→</b><span>Ask AI</span><b aria-hidden="true">→</b><span>Review</span><b aria-hidden="true">→</b><span>Keep or Discard</span>
+          </div>
+        </article>
+        <article class="content-card accent-yellow">
+          <span class="card-label">Good at</span>
+          <ul>
+            <li>Drafting a short description when you provide the full brief.</li>
+            <li>Shortening, clarifying or changing the tone of selected text.</li>
+            <li>Checking grammar and spelling.</li>
+            <li>Translating text that you explicitly select or enter.</li>
+            <li>Referring back to the last three AI responses while you refine the current exchange.</li>
+          </ul>
+        </article>
+        <article class="content-card accent-pink">
+          <span class="card-label">Cannot do</span>
+          <ul>
+            <li>Read the rest of your unit planner.</li>
+            <li>Know the task, subject, criteria or task description in a feedback box.</li>
+            <li>Know your students or your intended learning sequence.</li>
+            <li>Take responsibility for accuracy, tone or final feedback.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head">
+          <h3>Copyable prompt: a useful first draft</h3>
+          <button class="copy-button" type="button" data-copy="prompt-writing">Copy prompt</button>
+        </div>
+        <p class="prompt-text" id="prompt-writing">Draft a student-facing [unit / task / message] for [year group and subject]. Students will [what they will do]. They need to [key requirements]. The final outcome is [what they submit or produce]. Use plain English, a calm teacher voice and no more than [word count] words. Do not invent dates, resources, criteria or requirements. Return only the final text.</p>
+      </div>
+
+      <blockquote>
+        <p>“Ask AI” in unit planners “does not know the content of the rest of the planner”. In task feedback, it “does not know the context of the task”.</p>
+        <footer>Robin Hare, ISH hands-on evaluation, 28 August 2026</footer>
+      </blockquote>
+    </section>
+
+    <section class="feature-section" id="tagging" aria-labelledby="tagging-title">
+      <div class="feature-title-row">
+        <span class="big-feature-number" aria-hidden="true">3</span>
+        <div>
+          <h2 id="tagging-title">AI Curriculum Tagging</h2>
+          <p class="subtitle">Suggestions for curriculum labels, not an automatic curriculum decision.</p>
+        </div>
+      </div>
+
+      <div class="evidence-row" aria-label="Evidence for this section">
+        <span class="evidence-pill robin">ISH feature information</span>
+        <span class="evidence-pill official">ManageBac AI data principles</span>
+      </div>
+
+      <div class="two-col">
+        <article class="content-card accent-blue">
+          <span class="card-label">What it is</span>
+          <h3>Suggested tags from your entry</h3>
+          <p>When tagging Portfolio or Class Stream entries, ManageBac can suggest items such as ATL skills, Learner Profile attributes, transdisciplinary themes, standards or syllabus links.</p>
+        </article>
+        <article class="content-card accent-lime">
+          <span class="card-label">Where to find it</span>
+          <h3>Portfolio or Class Stream</h3>
+          <div class="path" aria-label="Navigation path">
+            <span>Create or edit entry</span><b aria-hidden="true">→</b><span>Curriculum tags</span><b aria-hidden="true">→</b><span>Review suggestions</span>
+          </div>
+        </article>
+        <article class="content-card accent-yellow">
+          <span class="card-label">Good at</span>
+          <ul>
+            <li>Offering a starting list when the activity text is specific.</li>
+            <li>Reminding you of plausible tags you may want to inspect.</li>
+            <li>Reducing the time spent opening several tag menus.</li>
+          </ul>
+        </article>
+        <article class="content-card accent-pink">
+          <span class="card-label">Cannot do</span>
+          <ul>
+            <li>Know which skill you explicitly taught or assessed.</li>
+            <li>Know your wider curriculum map or intended progression.</li>
+            <li>Decide that every plausible tag belongs on the entry.</li>
+            <li>Replace a teacher’s curriculum judgement.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head">
+          <h3>Input text that produces better suggestions</h3>
+          <button class="copy-button" type="button" data-copy="prompt-tagging">Copy example</button>
+        </div>
+        <p class="prompt-text" id="prompt-tagging">In this activity, students compare two possible solutions, explain the evidence behind their choice, and give one specific improvement after peer feedback. The focus is evaluating evidence and communicating a justified decision.</p>
+      </div>
+
+      <div class="honesty-note">
+        <strong>Practical rule:</strong> Add only the tags you can point to in the activity or evidence. A long list of plausible tags is not the same as taught curriculum.
+      </div>
+    </section>
+
+    <section class="feature-section" id="analytics" aria-labelledby="analytics-title">
+      <div class="feature-title-row">
+        <span class="big-feature-number" aria-hidden="true">4</span>
+        <div>
+          <h2 id="analytics-title">AI Assistant</h2>
+          <p class="subtitle">A question box in Academic Analytics that benefits from narrow prompts.</p>
+        </div>
+      </div>
+
+      <div class="evidence-row" aria-label="Evidence for this section">
+        <span class="evidence-pill robin">Robin tested at ISH</span>
+        <span class="evidence-pill official">Analytics path officially documented</span>
+      </div>
+
+      <div class="two-col">
+        <article class="content-card accent-blue">
+          <span class="card-label">What it is</span>
+          <h3>Chat-style help with analytics</h3>
+          <p>Inside Academic Analytics, the assistant can try to summarise patterns. ManageBac’s analytics workspace covers achievement status, grades, workload and submission information. Do not assume the assistant sees every filter on your screen, so name the scope and term in your question.</p>
+        </article>
+        <article class="content-card accent-lime">
+          <span class="card-label">Where to find it</span>
+          <h3>Insights → Academic Analytics</h3>
+          <div class="path" aria-label="Navigation path">
+            <span>Insights</span><b aria-hidden="true">→</b><span>Academic Analytics</span><b aria-hidden="true">→</b><span>AI Assistant</span>
+          </div>
+        </article>
+        <article class="content-card accent-yellow">
+          <span class="card-label">Good at</span>
+          <ul>
+            <li>Trying a first summary of a narrowly defined trend.</li>
+            <li>Turning a chart into questions for further investigation.</li>
+            <li>Helping you decide which metric to inspect next.</li>
+          </ul>
+        </article>
+        <article class="content-card accent-pink">
+          <span class="card-label">Cannot do</span>
+          <ul>
+            <li>Explain every cause behind a pattern.</li>
+            <li>Know classroom context that is not in the data.</li>
+            <li>Turn correlation into a reliable conclusion.</li>
+            <li>Replace opening the source chart and checking the selected term and scope.</li>
+            <li>Reliably infer filters or classroom context that you did not state.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head">
+          <h3>Copyable prompt: evidence first</h3>
+          <button class="copy-button" type="button" data-copy="prompt-analytics">Copy prompt</button>
+        </div>
+        <p class="prompt-text" id="prompt-analytics">For [programme / subject / class], during [selected term], list up to three patterns in [achievement / workload / submissions] that are supported by the analytics available to you. For each pattern, name the chart or metric. Separate observation from possible explanation. If you cannot access enough evidence, say so.</p>
+      </div>
+
+      <blockquote>
+        <p>The assistant “does have a try at summarising trends in curriculum” and, like other AI tools, “needs clear prompts”.</p>
+        <footer>Robin Hare, ISH hands-on evaluation, 28 August 2026</footer>
+      </blockquote>
+    </section>
+
+    <section class="section" id="privacy" aria-labelledby="privacy-title">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">✓</span>
+        <div>
+          <p class="section-kicker">What staff will reasonably ask</p>
+          <h2 id="privacy-title">Privacy and safe use</h2>
+        </div>
+      </div>
+
+      <div class="privacy-grid">
+        <article class="privacy-card">
+          <h3>Does Ask AI read the whole page?</h3>
+          <p><strong>No.</strong> ManageBac says the Writing Assistant sends only the text you explicitly type or select, plus its system instructions and model settings. It does not silently pull the rest of the planner or task page.</p>
+        </article>
+        <article class="privacy-card">
+          <h3>Is personal information used to train AI?</h3>
+          <p>ManageBac states that it does not share personally identifiable information with third-party LLMs, and that prompts and responses are not used to train those models.</p>
+        </article>
+        <article class="privacy-card">
+          <h3>Are prompts stored?</h3>
+          <p><strong>Yes.</strong> ManageBac says queries and responses are logged and may be reviewed by trained specialists to improve the service. It gives an approximate 30-day retention period for the service hosting the LLM.</p>
+        </article>
+        <article class="privacy-card">
+          <h3>So can I paste student details?</h3>
+          <p><strong>Do not.</strong> Even with ManageBac’s safeguards, use the minimum information needed. Write “the learner” or use a placeholder, then add names only after the AI text is back in your own editor.</p>
+        </article>
+      </div>
+
+      <div class="privacy-note">
+        <strong>Never place in an AI prompt:</strong>
+        <div class="do-not-list">
+          <span>Student names or IDs</span>
+          <span>Medical or safeguarding details</span>
+          <span>SEN or wellbeing information</span>
+          <span>Private family or behaviour notes</span>
+        </div>
+      </div>
+
+      <h3 style="margin-top:38px;">Before you click Keep</h3>
+      <div class="review-strip" aria-label="Five checks before keeping AI text">
+        <div class="review-step"><b>1</b>No personal data</div>
+        <div class="review-step"><b>2</b>All context supplied</div>
+        <div class="review-step"><b>3</b>Facts checked</div>
+        <div class="review-step"><b>4</b>Criteria checked</div>
+        <div class="review-step"><b>5</b>Edited into your voice</div>
+      </div>
+    </section>
+
+    <section class="section" id="faq" aria-labelledby="faq-title">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">+</span>
+        <div>
+          <p class="section-kicker">Quick answers</p>
+          <h2 id="faq-title">Frequently asked questions</h2>
+        </div>
+      </div>
+
+      <div class="faq-list">
+        <details class="faq-item" open>
+          <summary>Why did the notification summary disappear?</summary>
+          <div class="faq-answer"><p>It may collapse as soon as it finishes generating. Click the chevron on the right of the <strong>AI Summary</strong> bar.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>Why is it telling me about old work?</summary>
+          <div class="faq-answer"><p>It summarises unread notifications, not “this week”. Mark old notifications as read, then generate the summary again when new items arrive.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>Why does Ask AI give generic feedback?</summary>
+          <div class="faq-answer"><p>It does not know the task or criteria unless you put that information in the prompt. For sensitive student feedback, the safer use is to ask for a neutral structure with no personal data, then write the evidence and judgement yourself.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>Can I use it on a phone or tablet?</summary>
+          <div class="faq-answer"><p>The official Writing Assistant guide says it works in web and mobile browsers, but not yet in the ManageBac iOS or Android apps.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>Can I refine an answer before inserting it?</summary>
+          <div class="faq-answer"><p>Yes. ManageBac’s Writing Assistant guidance says you can continue refining a generated response before choosing Keep or Discard. Treat the current editing exchange as temporary working space, not as a durable record.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>Why can a colleague see a feature that I cannot?</summary>
+          <div class="faq-answer"><p>Notifications Summary and Curriculum Tagging are available to everyone at ISH. Writing Assistant and AI Assistant can be enabled or disabled per teacher. Ask your SAL or ManageBac administrator to check your permission.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>Does it cost me tokens or have a teacher limit?</summary>
+          <div class="faq-answer"><p>Robin confirmed with ManageBac that ISH’s enabled features have no extra cost or token limit for teachers. This is an ISH administration confirmation, not a general pricing claim for every school.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>Who is responsible for the final text?</summary>
+          <div class="faq-answer"><p>You are. ManageBac’s own guidance says the author remains responsible for reviewing and finalising generated content.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <section class="section" id="sources" aria-labelledby="sources-title">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">i</span>
+        <div>
+          <p class="section-kicker">Evidence, not sales copy</p>
+          <h2 id="sources-title">Sources and verification</h2>
+        </div>
+      </div>
+
+      <div class="source-grid">
+        <article class="source-card">
+          <span class="source-type">ISH live check</span>
+          <h3>Notifications Summary</h3>
+          <p>Checked on 30 August 2026. The safe classes used for navigation had zero students linked. No student screenshot or roster is included in this guide.</p>
+        </article>
+        <article class="source-card">
+          <span class="source-type">Official</span>
+          <h3>Writing Assistant: getting started</h3>
+          <p><a href="https://help.managebac.com/hc/en-us/articles/38117871360921-Getting-Started-with-ManageBac-AI-Writing-Assistant" target="_blank" rel="noopener noreferrer">Open ManageBac’s guide</a></p>
+        </article>
+        <article class="source-card">
+          <span class="source-type">Official</span>
+          <h3>Writing Assistant: tips and techniques</h3>
+          <p><a href="https://help.managebac.com/hc/en-us/articles/38174527032473-ManageBac-AI-Writing-Assistant-Tips-and-techniques" target="_blank" rel="noopener noreferrer">Open ManageBac’s prompt guidance</a></p>
+        </article>
+        <article class="source-card">
+          <span class="source-type">Official</span>
+          <h3>ManageBac AI: technical information</h3>
+          <p><a href="https://help.managebac.com/hc/en-us/articles/38171396948121-ManageBac-AI-Technical-Information" target="_blank" rel="noopener noreferrer">Open data, logging and safeguarding details</a></p>
+        </article>
+        <article class="source-card">
+          <span class="source-type">ISH evaluation</span>
+          <h3>Robin Hare’s hands-on findings</h3>
+          <p>Internal staff evaluation shared on 28 August 2026. It provides the local context and the quoted limitations in this guide.</p>
+        </article>
+        <article class="source-card">
+          <span class="source-type">Official</span>
+          <h3>Academic Analytics</h3>
+          <p><a href="https://help.managebac.com/hc/en-us/articles/51047822331673-Academic-Overview-and-Analytics" target="_blank" rel="noopener noreferrer">Open ManageBac’s analytics overview</a></p>
+        </article>
+        <article class="source-card">
+          <span class="source-type">Official</span>
+          <h3>ManageBac AI help index</h3>
+          <p><a href="https://help.managebac.com/hc/en-us/sections/51162127252377-ManageBac-AI" target="_blank" rel="noopener noreferrer">Open all current ManageBac AI guidance</a></p>
+        </article>
+        <article class="source-card">
+          <span class="source-type">Official</span>
+          <h3>What’s new in 2026</h3>
+          <p><a href="https://help.managebac.com/hc/en-us/articles/360039550531-What-s-New-in-ManageBac-2026" target="_blank" rel="noopener noreferrer">Open ManageBac’s 2026 release notes</a></p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer-card">
+      <h2>The useful habit</h2>
+      <p><strong>Give the AI the context, keep student data out, and check the result yourself.</strong> ManageBac has placed general AI tools closer to the work. It has not removed the need for teacher judgement.</p>
+      <p>Prepared for ISH staff by Alexandru Tănăsel, Technology Innovation Coach. Last verified 30 August 2026.</p>
+    </footer>
+  </main>
+
+  <div class="status-message" id="status-message" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var progressBar = document.getElementById("progress-bar");
+      var statusMessage = document.getElementById("status-message");
+      var statusTimer;
+
+      function updateProgress() {
+        var scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        var progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+        progressBar.style.width = Math.min(100, Math.max(0, progress)) + "%";
+      }
+
+      function announce(message) {
+        window.clearTimeout(statusTimer);
+        statusMessage.textContent = message;
+        statusMessage.classList.add("show");
+        statusTimer = window.setTimeout(function () {
+          statusMessage.classList.remove("show");
+        }, 2200);
+      }
+
+      function legacyCopy(text) {
+        var area = document.createElement("textarea");
+        area.value = text;
+        area.setAttribute("readonly", "");
+        area.style.position = "fixed";
+        area.style.opacity = "0";
+        document.body.appendChild(area);
+        area.select();
+        var copied = document.execCommand("copy");
+        document.body.removeChild(area);
+        return copied;
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+        return legacyCopy(text) ? Promise.resolve() : Promise.reject(new Error("Copy unavailable"));
+      }
+
+      document.getElementById("print-guide").addEventListener("click", function () {
+        window.print();
+      });
+
+      Array.prototype.forEach.call(document.querySelectorAll("[data-copy]"), function (button) {
+        button.addEventListener("click", function () {
+          var target = document.getElementById(button.getAttribute("data-copy"));
+          if (!target) return;
+          copyText(target.textContent.trim()).then(function () {
+            announce("Copied to clipboard");
+          }).catch(function () {
+            announce("Copy was blocked. Select the text and copy it manually.");
+          });
+        });
+      });
+
+      window.addEventListener("scroll", updateProgress, { passive: true });
+      window.addEventListener("resize", updateProgress);
+      updateProgress();
+    }());
+  </script>
+</body>
+</html>

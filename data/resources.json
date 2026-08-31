@@ -16,6 +16,19 @@
   },
   "resources": [
     {
+      "title": "ManageBac AI: all you need to know",
+      "category": "EdTech & AI",
+      "provider": "ISH staff guide",
+      "format": "Online (self-paced)",
+      "audience": "All staff",
+      "cost": "Free",
+      "featured": true,
+      "description": "ISH guide to the four ManageBac AI tools now on for all staff: Notifications Summary, Writing Assistant, Curriculum Tagging and the Analytics Assistant. What each does, privacy and safe use, FAQ.",
+      "url": "ManageBac_AI_Tutorial.html",
+      "location": "Online",
+      "date": ""
+    },
+    {
       "title": "IB Category 1 Workshop",
       "category": "IB Official",
       "provider": "International Baccalaureate (IB)",
