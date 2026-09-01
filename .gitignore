@@ -5,3 +5,8 @@ node_modules/
 .idea/
 .vscode/
 Thumbs.db
+
+# personal working files, never publish
+.break-duty-booked
+break-duty-booking-TARGETS.md
+managebac-ai-tutorial-BRIEF.md
